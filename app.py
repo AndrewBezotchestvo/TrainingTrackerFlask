@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, session, redirect, url_for, request, flash
 from datetime import datetime, timedelta
 
@@ -22,17 +23,25 @@ def check_user_in_session():
     else:
         return False
 
-@app.route('/')
+@app.route('/',  methods=['GET', 'POST'])
 def index():
     if check_user_in_session():
         form = ExerciseForm()
 
-        if form.validate_on_submit():
+        if request.method == 'POST':
             title = form.title.data
             category = form.category.data
             value = form.value.data
             repeat = form.repeat.data
-        return render_template('index.html', form=form)
+
+            exercise = Exercises(title=title, category=category, value=value, repeat=repeat)
+            db.session.flush()
+            db.session.add(exercise)
+            db.session.commit()
+            return redirect("/")
+
+        exercises = Exercises.query.all()
+        return render_template('index.html', form=form, exercises=exercises)
     else:
         return redirect(url_for('login'))
 
@@ -50,7 +59,7 @@ def login():
             session.permanent = True
             return redirect('/')
         else:
-            flash("Такой пользователя не существует", "error")
+            flash("Такой пользователя не существует", "success")
 
     return render_template('login.html', form=form)
 
@@ -76,9 +85,12 @@ def register():
             return redirect('/')
     return render_template('register.html', form=form)
 
-@app.route('/exercise/add', methods=['GET', 'POST'])
-def exercise():
-    return render_template('exercise.html')
+@app.route('/exercise/delete/<int:exercise_id>')
+def delete_exercise(exercise_id):
+    exercise = Exercises.query.get(exercise_id)
+    db.session.delete(exercise)
+    db.session.commit()
+    return redirect("/")
 
 @app.route('/logout')
 def logout():

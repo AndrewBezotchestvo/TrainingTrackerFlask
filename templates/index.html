@@ -32,4 +32,30 @@
         {{ form.submit() }}
     </div>
 </form>
+
+<div class="exercises">
+    {% for exercise in exercises %}
+    <div class ="exercise">
+            <div class ="exercise-field">
+                {{ exercise.title }}
+            </div>
+             <div class ="exercise-field">
+                {{ exercise.category }}
+             </div>
+            <div class ="exercise-field">
+                {{ exercise.value }}
+            </div>
+            <div class ="exercise-field">
+                {{ exercise.repeat }}
+            </div>
+            <div class ="exercise-field">
+                {{ exercise.date.strftime('%d.%m.%d %H:%M') }}
+            </div>
+            <div class ="exercise-field">
+                <a href="exercise/history/{{ exercise.id }}">история</a>
+                <a href="exercise/delete/{{ exercise.id }}">X</a>
+            </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}
