@@ -1,10 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<h2>Ваши тренировки</h2>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+
+    <div class="exexercise-field">
+        {{ form.title.label }}
+        {{ form.title() }}
+    </div>
+
+    <div class="exexercise-field">
+        {{ form.category.label }}
+        {{ form.category() }}
+    </div>
+
+    <div class="exexercise-field">
+        {{ form.value.label }}
+        {{ form.value() }}
+    </div>
+
+    <div class="exexercise-field">
+        {{ form.repeat.label }}
+        {{ form.repeat() }}
+    </div>
+
+    <div class="exexercise-field">
+        {{ form.submit() }}
+    </div>
+</form>
+{% endblock %}
