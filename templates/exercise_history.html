@@ -1,46 +1,66 @@
 {% extends 'base.html' %}
-
-{% block title %}История{% endblock %}
+{% block title %}История — {{ exercise.title }}{% endblock %}
 
 {% block content %}
-<h2>История по {{ exercise.title }}</h2>
-<h2>
-    Категория
-{% if exercise.category == 'c' %}
-    Кардио
-{% else %}
-    Силовая
-{% endif %}
-</h2>
-<h3>Текущие значения</h3>
-<div class ="exercise">
-            <div class ="exercise-field">
-                вес/дистанция {{ exercise.value }}
-            </div>
-            <div class ="exercise-field">
-                повторения {{ exercise.repeat }}
-            </div>
-            <div class ="exercise-field">
-                дата {{ exercise.date.strftime('%d.%m.%d %H:%M') }}
-            </div>
-</div>
+<section class="page-header">
+    <a href="/" class="back-link">← Назад</a>
+    <h1>{{ exercise.title }}</h1>
+    <span class="badge badge--{{ 'cardio' if exercise.category == 'c' else 'strength' }}">
+        {{ 'Кардио' if exercise.category == 'c' else 'Силовая' }}
+    </span>
+</section>
 
-<div class="exercises">
-    {% for exercise_semple in exercise_history %}
-    <div class ="exercise">
-            <div class ="exercise-field">
-                вес/дистанция {{ exercise_semple.value }}
-            </div>
-            <div class ="exercise-field">
-                повторения {{ exercise_semple.repeat }}
-            </div>
-            <div class ="exercise-field">
-                дата {{ exercise_semple.date.strftime('%d.%m.%d %H:%M') }}
-            </div>
-            <div class ="exercise-field">
-                <a href="/exercise-semple/delete/{{ exercise_semple.id }}">X</a>
-            </div>
+<section class="card">
+    <h2 class="card-title">Текущее значение</h2>
+    <div class="stats-grid">
+        <div class="exercise-stat">
+            <span class="stat-label">Вес/дистанция</span>
+            <span class="stat-value">{{ exercise.value }}</span>
+        </div>
+        <div class="exercise-stat">
+            <span class="stat-label">Повторения</span>
+            <span class="stat-value">{{ exercise.repeat }}</span>
+        </div>
+        <div class="exercise-stat">
+            <span class="stat-label">Дата</span>
+            <span class="stat-value">{{ exercise.date.strftime('%d.%m.%Y %H:%M') }}</span>
+        </div>
     </div>
-    {% endfor %}
-</div>
+</section>
+
+<section class="exercises-section">
+    <h2 class="section-title">История изменений</h2>
+
+    {% if exercise_history %}
+        <div class="exercises">
+            {% for sample in exercise_history %}
+                <article class="exercise">
+                    <div class="exercise-body">
+                        <div class="exercise-stat">
+                            <span class="stat-label">Вес/дистанция</span>
+                            <span class="stat-value">{{ sample.value }}</span>
+                        </div>
+                        <div class="exercise-stat">
+                            <span class="stat-label">Повторения</span>
+                            <span class="stat-value">{{ sample.repeat }}</span>
+                        </div>
+                        <div class="exercise-stat">
+                            <span class="stat-label">Дата</span>
+                            <span class="stat-value">{{ sample.date.strftime('%d.%m.%Y %H:%M') }}</span>
+                        </div>
+                    </div>
+                    <div class="exercise-actions">
+                        <a href="/exercise-semple/delete/{{ sample.id }}"
+                           class="btn btn--danger btn--sm"
+                           onclick="return confirm('Удалить запись?')">Удалить</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>История пуста</p>
+        </div>
+    {% endif %}
+</section>
 {% endblock %}

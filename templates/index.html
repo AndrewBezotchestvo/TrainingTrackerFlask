@@ -1,61 +1,87 @@
 {% extends 'base.html' %}
-
-{% block title %}Главная{% endblock %}
+{% block title %}Главная — Трекер тренировок{% endblock %}
 
 {% block content %}
-<h2>Ваши тренировки</h2>
+<section class="page-header">
+    <h1>Ваши тренировки</h1>
+    <p class="page-subtitle">Добавьте новое упражнение или посмотрите историю</p>
+</section>
 
-<form method="post">
-    {{ form.hidden_tag() }}
+<section class="card">
+    <h2 class="card-title">Новое упражнение</h2>
+    <form method="post" class="form">
+        {{ form.hidden_tag() }}
 
-    <div class="exexercise-field">
-        {{ form.title.label }}
-        {{ form.title() }}
-    </div>
-
-    <div class="exexercise-field">
-        {{ form.category.label }}
-        {{ form.category() }}
-    </div>
-
-    <div class="exexercise-field">
-        {{ form.value.label }}
-        {{ form.value() }}
-    </div>
-
-    <div class="exexercise-field">
-        {{ form.repeat.label }}
-        {{ form.repeat() }}
-    </div>
-
-    <div class="exexercise-field">
-        {{ form.submit() }}
-    </div>
-</form>
-
-<div class="exercises">
-    {% for exercise in exercises %}
-    <div class ="exercise">
-            <div class ="exercise-field">
-                {{ exercise.title }}
+        <div class="form-row">
+            <div class="form-field">
+                {{ form.title.label }}
+                {{ form.title(class="input") }}
             </div>
-             <div class ="exercise-field">
-                {{ exercise.category }}
-             </div>
-            <div class ="exercise-field">
-                {{ exercise.value }}
+            <div class="form-field">
+                {{ form.category.label }}
+                {{ form.category(class="input") }}
             </div>
-            <div class ="exercise-field">
-                {{ exercise.repeat }}
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                {{ form.value.label }}
+                {{ form.value(class="input") }}
             </div>
-            <div class ="exercise-field">
-                {{ exercise.date.strftime('%d.%m.%d %H:%M') }}
+            <div class="form-field">
+                {{ form.repeat.label }}
+                {{ form.repeat(class="input") }}
             </div>
-            <div class ="exercise-field">
-                <a href="exercise/history/{{ exercise.id }}">история</a>
-                <a href="exercise/delete/{{ exercise.id }}">X</a>
-            </div>
-    </div>
-    {% endfor %}
-</div>
+        </div>
+
+        <div class="form-actions">
+            {{ form.submit(class="btn btn--primary") }}
+        </div>
+    </form>
+</section>
+
+<section class="exercises-section">
+    <h2 class="section-title">Список упражнений</h2>
+
+    {% if exercises %}
+        <div class="exercises">
+            {% for exercise in exercises %}
+                <article class="exercise">
+                    <div class="exercise-header">
+                        <h3 class="exercise-title">{{ exercise.title }}</h3>
+                        <span class="badge badge--{{ 'cardio' if exercise.category == 'c' else 'strength' }}">
+                            {{ 'Кардио' if exercise.category == 'c' else 'Силовая' }}
+                        </span>
+                    </div>
+
+                    <div class="exercise-body">
+                        <div class="exercise-stat">
+                            <span class="stat-label">Вес/дистанция</span>
+                            <span class="stat-value">{{ exercise.value }}</span>
+                        </div>
+                        <div class="exercise-stat">
+                            <span class="stat-label">Повторения</span>
+                            <span class="stat-value">{{ exercise.repeat }}</span>
+                        </div>
+                        <div class="exercise-stat">
+                            <span class="stat-label">Дата</span>
+                            <span class="stat-value">{{ exercise.date.strftime('%d.%m.%Y %H:%M') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="exercise-actions">
+                        <a href="/exercise/history/{{ exercise.id }}" class="btn btn--ghost btn--sm">История</a>
+                        <a href="/exercise/delete/{{ exercise.id }}"
+                           class="btn btn--danger btn--sm"
+                           onclick="return confirm('Удалить упражнение?')">Удалить</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>У вас пока нет упражнений. Добавьте первое выше 👆</p>
+        </div>
+    {% endif %}
+</section>
 {% endblock %}

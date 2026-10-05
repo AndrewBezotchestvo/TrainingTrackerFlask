@@ -1,28 +1,32 @@
 {% extends 'base.html' %}
-
-{% block title %}Вход в аккаунт{% endblock %}
+{% block title %}Вход — Трекер тренировок{% endblock %}
 
 {% block content %}
-<h2>Вход в аккаунт</h2>
+<div class="auth-wrapper">
+    <div class="card card--auth">
+        <h1 class="card-title card-title--center">Вход в аккаунт</h1>
 
-<form method="post">
-    {{ form.hidden_tag() }}
+        <form method="post" class="form">
+            {{ form.hidden_tag() }}
 
-    <div class="field">
-        {{ form.email.label }}
-        {{ form.email() }}
+            <div class="form-field">
+                {{ form.email.label }}
+                {{ form.email(class="input", placeholder="you@example.com") }}
+            </div>
+
+            <div class="form-field">
+                {{ form.password.label }}
+                {{ form.password(class="input", placeholder="••••••••") }}
+            </div>
+
+            <div class="form-actions">
+                {{ form.submit(class="btn btn--primary btn--full") }}
+            </div>
+        </form>
+
+        <p class="auth-switch">
+            Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+        </p>
     </div>
-
-    <div class="field">
-        {{ form.password.label }}
-        {{ form.password() }}
-    </div>
-
-    <div class="field">
-        {{ form.submit() }}
-    </div>
-
-    <a href="/register">Зарегестрироваться</a>
-
-</form>
+</div>
 {% endblock %}

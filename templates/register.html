@@ -1,33 +1,37 @@
 {% extends 'base.html' %}
-
-{% block title %}Регистрация{% endblock %}
+{% block title %}Регистрация — Трекер тренировок{% endblock %}
 
 {% block content %}
-<h2>Регистрация</h2>
+<div class="auth-wrapper">
+    <div class="card card--auth">
+        <h1 class="card-title card-title--center">Регистрация</h1>
 
-<form method="post">
-    {{ form.hidden_tag() }}
+        <form method="post" class="form">
+            {{ form.hidden_tag() }}
 
-    <div class="field">
-        {{ form.name.label }}
-        {{ form.name() }}
+            <div class="form-field">
+                {{ form.name.label }}
+                {{ form.name(class="input", placeholder="Ваше имя") }}
+            </div>
+
+            <div class="form-field">
+                {{ form.email.label }}
+                {{ form.email(class="input", placeholder="you@example.com") }}
+            </div>
+
+            <div class="form-field">
+                {{ form.password.label }}
+                {{ form.password(class="input", placeholder="••••••••") }}
+            </div>
+
+            <div class="form-actions">
+                {{ form.submit(class="btn btn--primary btn--full") }}
+            </div>
+        </form>
+
+        <p class="auth-switch">
+            Уже есть аккаунт? <a href="/login">Войти</a>
+        </p>
     </div>
-
-    <div class="field">
-        {{ form.email.label }}
-        {{ form.email() }}
-    </div>
-
-    <div class="field">
-        {{ form.password.label }}
-        {{ form.password() }}
-    </div>
-
-    <div class="field">
-        {{ form.submit() }}
-    </div>
-
-    <a href="/login">Уже есть аккаунт</a>
-
-</form>
+</div>
 {% endblock %}
