@@ -2,10 +2,8 @@
 from flask import Flask, render_template, session, redirect, url_for, request, flash
 from datetime import datetime, timedelta
 
-from sqlalchemy.testing.pickleable import User
-
 from forms import LoginForm, RegisterForm, ExerciseForm
-from models import Exercises, Users, db
+from models import Exercises, Users, db, ExerciseHistory
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///training.db'
@@ -27,6 +25,7 @@ def check_user_in_session():
 def index():
     if check_user_in_session():
         form = ExerciseForm()
+        user_id = session.get('user_id')
 
         if request.method == 'POST':
             title = form.title.data
@@ -34,13 +33,22 @@ def index():
             value = form.value.data
             repeat = form.repeat.data
 
-            exercise = Exercises(title=title, category=category, value=value, repeat=repeat)
-            db.session.flush()
-            db.session.add(exercise)
-            db.session.commit()
+            exercise = Exercises.query.filter_by(title=title, category=category, user_id=user_id).first()
+
+            if exercise is not None:
+                exercise_history = ExerciseHistory(exercise_id=exercise.id, value=exercise.value, repeat=exercise.repeat, date=exercise.date)
+                exercise.value = value
+                exercise.repeat = repeat
+                exercise.date = datetime.now()
+                db.session.add(exercise_history)
+                db.session.commit()
+            else:
+                exercise = Exercises(user_id=user_id, title=title, category=category, value=value, repeat=repeat)
+                db.session.add(exercise)
+                db.session.commit()
             return redirect("/")
 
-        exercises = Exercises.query.all()
+        exercises = Exercises.query.filter_by(user_id=user_id).all()
         return render_template('index.html', form=form, exercises=exercises)
     else:
         return redirect(url_for('login'))
@@ -89,8 +97,27 @@ def register():
 def delete_exercise(exercise_id):
     exercise = Exercises.query.get(exercise_id)
     db.session.delete(exercise)
+
+    exercise_history = ExerciseHistory.query.filter_by(exercise_id=exercise_id).all()
+    for history in exercise_history:
+        db.session.delete(history)
     db.session.commit()
+
     return redirect("/")
+
+@app.route('/exercise/history/<int:exercise_id>')
+def show_exercise_history(exercise_id):
+    exercise = Exercises.query.get(exercise_id)
+    exercise_history = ExerciseHistory.query.filter_by(exercise_id=exercise_id).all()
+    return render_template("exercise_history.html", exercise_history=exercise_history, exercise=exercise)
+
+@app.route('/exercise-semple/delete/<int:exercise_history_id>')
+def delete_exercise_semple(exercise_history_id):
+    exercise_history = ExerciseHistory.query.get(exercise_history_id)
+    exercise_id = exercise_history.exercise_id
+    db.session.delete(exercise_history)
+    db.session.commit()
+    return redirect(f"/exercise/history/{exercise_id}")
 
 @app.route('/logout')
 def logout():
