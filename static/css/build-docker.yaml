@@ -1,0 +1,16 @@
+name: Build and Publish image to Docker Hub
+on:
+   [workflow_dispatch]
+
+jobs:
+  publish-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: build image
+        run: docker build . -t andrewbezotchestvo/trainingtracker:latest
+      - name: push image to Docker Hub
+        run: |
+          docker push andrewbezotchestvo/trainingtracker:latest
