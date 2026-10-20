@@ -1,6 +1,12 @@
 name: Build and Publish image to Docker Hub
 on:
-   [workflow_dispatch]
+   push:
+     branches:
+       - master
+     paths:
+       - 'Dockerfile'
+       - 'build-docker.yaml'
+       - '*.py'
 
 jobs:
   publish-images:
