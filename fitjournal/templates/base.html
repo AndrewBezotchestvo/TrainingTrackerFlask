@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ title|default('FitJournal') }} · FitJournal</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+<script defer src="{{ url_for('static',filename='journal.js') }}"></script></head>
+<body><header><div class="shell"><a class="brand" href="{{ url_for('index') }}">Fit<span>Journal</span></a>
+<nav aria-label="Разделы">{% for key,(label,_) in tabs.items() %}<a {% if table == key %}aria-current="page"{% endif %} href="{{ url_for('journal',table=key) }}">{{ label }}</a>{% endfor %}
+<a href="{{ url_for('progress') }}">Прогресс</a><a href="{{ url_for('settings') }}">Настройки</a></nav></div></header>
+<main class="shell">{% for msg in get_flashed_messages() %}<p class="notice" role="status">{{ msg }}</p>{% endfor %}{% block content %}{% endblock %}</main>
+<footer class="shell">FitJournal · Личный журнал тренировок и питания</footer></body></html>

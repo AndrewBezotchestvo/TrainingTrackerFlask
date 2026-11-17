@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="heading"><h1>{{ title }}</h1><a class="button" href="{{ url_for('edit',table=table,day=selected) if selected else url_for('edit',table=table) }}">+ Добавить</a></div>
+{% if table != 'plan' %}<form class="filters" method="get"><label>Дата <input type="date" name="day" value="{{ selected }}"></label><button class="secondary">Показать</button><a href="{{ url_for('journal',table=table) }}">Все даты</a></form>{% endif %}
+{% if totals is not none %}<p class="notice">За день: {{ totals[0]|round(1) }} ккал · {{ totals[1]|round(1) }} г белка</p>{% endif %}
+{% if table == 'plan' %}<p>План повторяется каждую неделю. Кардио показано перед силовыми. Кнопка «Записать» переносит упражнение в дневник с возможностью изменить фактические значения.</p>{% endif %}
+{% if table == 'strength' %}<p>Если вес или повторы менялись от подхода к подходу, запиши каждый вариант отдельной строкой.</p>{% endif %}
+{% if not rows %}<article>Записей пока нет.</article>{% endif %}
+{% for row in rows %}
+{% if table == 'plan' and loop.changed(row.weekday) %}<h2>{{ days[row.weekday-1] }}</h2>{% endif %}
+<article class="entry"><h3>{{ row.name if 'name' in row.keys() else row.day }}</h3>
+<dl>{% for key,label,kind,lo,hi,required in fields if key not in ('name','weekday') and not (table == 'body' and key == 'day') and row[key] is not none %}
+<div><dt>{{ label }}</dt><dd>{% if kind == 'kind' %}{{ 'Кардио' if row[key] == 'cardio' else 'Силовое' }}{% else %}{{ row[key] }}{% endif %}</dd></div>
+{% endfor %}</dl>
+<div class="actions"><a href="{{ url_for('edit',table=table,row_id=row.id) }}">Изменить</a>
+{% if table == 'plan' %}<a href="{{ url_for('log',row_id=row.id) }}">Записать</a>{% endif %}
+<form method="post" action="{{ url_for('delete',table=table,row_id=row.id) }}" data-confirm><input type="hidden" name="csrf" value="{{ csrf }}"><button class="danger">Удалить</button></form></div></article>
+{% endfor %}
+{% endblock %}

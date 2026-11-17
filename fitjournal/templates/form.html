@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ title }}</h1>
+{% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}
+<form class="editor" method="post" action="{{ action|default(request.path) }}">
+<input type="hidden" name="csrf" value="{{ csrf }}">
+{% for key,label,kind,lo,hi,required in fields %}
+{% set val=values.get(key) %}
+<label data-field="{{ key }}">{{ label }}{% if required %} <span aria-hidden="true">*</span>{% endif %}
+{% if kind in ('kind','weekday') %}
+<select name="{{ key }}">
+{% if kind == 'weekday' %}{% for item in days %}<option value="{{ loop.index }}" {% if val|string == loop.index|string %}selected{% endif %}>{{ item }}</option>{% endfor %}
+{% else %}<option value="strength">Силовое</option><option value="cardio" {% if val == 'cardio' %}selected{% endif %}>Кардио</option>{% endif %}
+</select>
+{% elif kind == 'memo' %}<textarea name="{{ key }}" rows="3" maxlength="2000">{{ val or '' }}</textarea>
+{% else %}<input name="{{ key }}" type="{{ {'int':'number','num':'number'}.get(kind,kind) }}" value="{{ val if val is not none else '' }}"
+{% if lo is not none %}min="{{ lo }}" max="{{ hi }}" step="{{ 'any' if kind == 'num' else '1' }}"{% endif %}{% if kind == 'text' %} maxlength="120"{% endif %}{% if required %} required{% endif %}>
+{% endif %}</label>
+{% endfor %}
+<div class="actions"><button>Сохранить</button><a href="{{ url_for('journal',table=table) if table else url_for('index') }}">Назад</a></div></form>
+{% endblock %}

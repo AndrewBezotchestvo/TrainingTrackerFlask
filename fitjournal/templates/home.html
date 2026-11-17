@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<p class="eyebrow">ОБЗОР · {{ today }}</p><h1>{{ settings.name }}</h1>
+<div class="grid">
+<article><p>Сегодня · энергия</p><strong>{{ meals[0]|round(1) }} / {{ settings.kcal }} ккал</strong></article>
+<article><p>Сегодня · белок</p><strong>{{ meals[1]|round(1) }} / {{ settings.protein }} г</strong></article>
+<article><p>Последний вес тела</p><strong>{% if latest %}{{ latest.weight }} кг{% else %}—{% endif %}</strong>{% if latest %}<p>{{ latest.day }}</p>{% endif %}</article>
+</div>
+<div class="heading"><h2>План на сегодня</h2><a href="{{ url_for('journal',table='plan') }}">Вся неделя →</a></div>
+{% for row in planned %}
+<article class="line"><div><b>{{ row.name }}</b><p>{% if row.kind == 'cardio' %}{{ row.minutes }} мин{% else %}{{ row.sets }} × {{ row.reps }}{% if row.load is not none %} · {{ row.load }} кг{% endif %}{% endif %}</p></div>
+<a class="button secondary" href="{{ url_for('log',row_id=row.id) }}">Записать</a></article>
+{% else %}<article>На сегодня ничего не запланировано. <a href="{{ url_for('edit',table='plan') }}">Добавить в план</a></article>{% endfor %}
+{% endblock %}

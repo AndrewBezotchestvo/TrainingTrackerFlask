@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Прогресс</h1>
+{% if exercises %}<form class="filters"><label>Упражнение <select name="exercise">{% for item in exercises %}<option {% if item == exercise %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></label><button class="secondary">Показать</button></form>{% endif %}
+<div class="charts">{% for label, points in series %}<article><h2>{{ label }}</h2>
+{% if points %}<div class="chart" data-points='{{ points|tojson }}'></div>
+<details><summary>Значения · {{ points|length }}</summary><ul>{% for day,value in points %}<li>{{ day }} — {{ value|round(2) }}</li>{% endfor %}</ul></details>
+{% else %}<p>Пока нет данных.</p>{% endif %}</article>{% endfor %}</div>
+{% endblock %}
